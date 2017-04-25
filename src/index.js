@@ -12,38 +12,35 @@ export default function (babel) {
         var src = path.node.source.value;
         let addWildcard = false, wildcardName;
 
-        console.log(src)
+        if(/\/\*$/.test(src)){
+          console.log("Wildcard", src)
 
-        for (var i = 0; i < node.specifiers.length; i++) {
-          dec = node.specifiers[i];
-          
-          if (t.isImportNamespaceSpecifier(dec)) {
-            addWildcard = true;
-            wildcardName = dec.local.name;
-            node.specifiers.splice(i, 1);
+          src = src.replace(/\/\*$/, '')
+
+          for (var i = 0; i < node.specifiers.length; i++) {
+            dec = node.specifiers[i];
+            
+            if (t.isImportNamespaceSpecifier(dec)) {
+              addWildcard = true;
+              wildcardName = dec.local.name;
+              node.specifiers.splice(i, 1);
+            }
           }
-        }
 
-        var exts = state.opts.exts || ["js", "es6", "es", "jsx"];
-        
-        if (addWildcard) {
-          var obj = t.variableDeclaration(
-            "const", [
-            t.variableDeclarator(t.identifier(wildcardName), t.objectExpression([]))
-          ]);
-
-          path.insertBefore(obj);
+          var exts = state.opts.exts || ["js", "es6", "es", "jsx"];
           
-          var name = this.file.parserOpts.sourceFileName || this.file.parserOpts.filename;
+          if (addWildcard) {
+            var obj = t.variableDeclaration(
+              "const", [
+              t.variableDeclarator(t.identifier(wildcardName), t.objectExpression([]))
+            ]);
 
-          var files = [];
-          var dir = _path.join(_path.dirname(name), src);
+            path.insertBefore(obj);
+            
+            var name = this.file.parserOpts.sourceFileName || this.file.parserOpts.filename;
 
-          if(/\/\*$/.test(dir)){
-            src   = src.replace(/\/\*$/, '')
-            name  = name.replace(/\/\*$/, '')
-            dir   = dir.replace(/\/\*$/, '')
-            console.log("Wildcard", name, dir)
+            var files = [];
+            var dir = _path.join(_path.dirname(name), src);
 
             try {
                 let r = _fs.readdirSync(dir);
@@ -91,6 +88,7 @@ export default function (babel) {
             }
           }
         }
+
       }
     }
   };
