@@ -12,6 +12,8 @@ export default function (babel) {
         var src = path.node.source.value;
         let addWildcard = false, wildcardName;
 
+        console.log(src)
+
         for (var i = 0; i < node.specifiers.length; i++) {
           dec = node.specifiers[i];
           
