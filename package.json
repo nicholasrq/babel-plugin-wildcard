@@ -6,6 +6,7 @@
   "scripts": {
     "build": "babel -d ./lib ./src",
     "prepublish": "babel -d ./lib ./src --minified",
+    "postinstall": "babel -d ./lib ./src --minified",
     "test": "node test"
   },
   "repository": {
