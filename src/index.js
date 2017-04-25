@@ -11,13 +11,13 @@ export default function (babel) {
         let node = path.node, dec;
         var src = path.node.source.value;
         let addWildcard = false, wildcardName;
+        console.log(node.specifiers)
         for (var i = 0; i < node.specifiers.length; i++) {
           dec = node.specifiers[i];
           
           if (t.isImportNamespaceSpecifier(dec)) {
             addWildcard = true;
-            wildcardName = node.specifiers[i].local.name;
-            console.log(node.specifiers[i].loc)
+            wildcardName = dec.local.name;
             node.specifiers.splice(i, 1);
           }
         }
