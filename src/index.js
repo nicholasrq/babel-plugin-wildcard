@@ -36,8 +36,8 @@ export default function (babel) {
           var files = [];
           var dir = _path.join(_path.dirname(name), src);
 
-          if(/\*$/.test(dir)){
-            dir = dir.replace(/\*$/, '')
+          if(/\/\*$/.test(dir)){
+            dir = dir.replace(/\/\*$/, '')
 
             try {
                 let r = _fs.readdirSync(dir);
