@@ -29,6 +29,7 @@ export default function (babel) {
             "const", [
             t.variableDeclarator(t.identifier(wildcardName), t.objectExpression([]))
           ]);
+
           path.insertBefore(obj);
           
           var name = this.file.parserOpts.sourceFileName || this.file.parserOpts.filename;
@@ -39,6 +40,7 @@ export default function (babel) {
           if(/\/\*$/.test(dir)){
             name  = name.replace(/\/\*$/, '')
             dir   = dir.replace(/\/\*$/, '')
+            console.log("Wildcard", name, dir)
 
             try {
                 let r = _fs.readdirSync(dir);
