@@ -36,51 +36,53 @@ export default function (babel) {
           var files = [];
           var dir = _path.join(_path.dirname(name), src);
 
-          console.log(dir)
+          if(/\*$/.test(dir)){
+            dir = dir.replace(/\*$/, '')
 
-          try {
-              let r = _fs.readdirSync(dir);
-              for (var i = 0; i < r.length; i++) {
-                  if (exts.indexOf(_path.extname(r[i]).substring(1)) > -1)
-                      files.push(r[i]);
-              }
-          } catch(e) {
-              console.warn(`Wildcard for ${name} points at ${src} which is not a directory.`);
-              return;
-          }
+            try {
+                let r = _fs.readdirSync(dir);
+                for (var i = 0; i < r.length; i++) {
+                    if (exts.indexOf(_path.extname(r[i]).substring(1)) > -1)
+                        files.push(r[i]);
+                }
+            } catch(e) {
+                console.warn(`Wildcard for ${name} points at ${src} which is not a directory.`);
+                return;
+            }
+            
+            for (var i = 0; i < files.length; i++) {
+              let id = path.scope.generateUidIdentifier("wcImport");
+              var file = files[i];
+              var fancyName = file.replace(/(?!^)\.[^.\s]+$/, "");
+              if (fancyName[0] === ".") fancyName = fancyName.substring(1);
+              if (state.opts.noCamelCase !== true)
+                  fancyName = fancyName.match(/[A-Z][a-z]+(?![a-z])|[A-Z]+(?![a-z])|([a-zA-Z\d]+(?=-))|[a-zA-Z\d]+(?=_)|[a-z]+(?=[A-Z])|[A-Za-z0-9]+/g).map(s => s[0].toUpperCase() + s.substring(1)).join("");
+              var name;
+              if (state.opts.nostrip !== true) name = "./" + _path.join(src, _path.basename(file));
+              else name = "./" + _path.join(src, file);
+
+              let importDeclaration = t.importDeclaration(
+                [t.importDefaultSpecifier(
+                  id
+                )],
+                t.stringLiteral(name)
+              );
+              let thing = t.expressionStatement(
+                  t.assignmentExpression("=", t.memberExpression(
+                    t.identifier(wildcardName),
+                    t.identifier(
+                      fancyName
+                    )
+                  ), id
+              ));
+
+              path.insertAfter(thing);
+              path.insertAfter(importDeclaration);
+            }
           
-          for (var i = 0; i < files.length; i++) {
-            let id = path.scope.generateUidIdentifier("wcImport");
-            var file = files[i];
-            var fancyName = file.replace(/(?!^)\.[^.\s]+$/, "");
-            if (fancyName[0] === ".") fancyName = fancyName.substring(1);
-            if (state.opts.noCamelCase !== true)
-                fancyName = fancyName.match(/[A-Z][a-z]+(?![a-z])|[A-Z]+(?![a-z])|([a-zA-Z\d]+(?=-))|[a-zA-Z\d]+(?=_)|[a-z]+(?=[A-Z])|[A-Za-z0-9]+/g).map(s => s[0].toUpperCase() + s.substring(1)).join("");
-            var name;
-            if (state.opts.nostrip !== true) name = "./" + _path.join(src, _path.basename(file));
-            else name = "./" + _path.join(src, file);
-
-            let importDeclaration = t.importDeclaration(
-              [t.importDefaultSpecifier(
-                id
-              )],
-              t.stringLiteral(name)
-            );
-            let thing = t.expressionStatement(
-                t.assignmentExpression("=", t.memberExpression(
-                  t.identifier(wildcardName),
-                  t.identifier(
-                    fancyName
-                  )
-                ), id
-            ));
-
-            path.insertAfter(thing);
-            path.insertAfter(importDeclaration);
-          }
-        
-          if (path.node.specifiers.length === 0) {
-            path.remove();
+            if (path.node.specifiers.length === 0) {
+              path.remove();
+            }
           }
         }
       }
