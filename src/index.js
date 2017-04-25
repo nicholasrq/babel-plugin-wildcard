@@ -17,7 +17,7 @@ export default function (babel) {
           if (t.isImportNamespaceSpecifier(dec)) {
             addWildcard = true;
             wildcardName = node.specifiers[i].local.name;
-            console.log(specifiers[i])
+            console.log(node.specifiers[i])
             node.specifiers.splice(i, 1);
           }
         }
