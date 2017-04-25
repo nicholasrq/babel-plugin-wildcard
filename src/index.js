@@ -38,6 +38,7 @@ export default function (babel) {
           var dir = _path.join(_path.dirname(name), src);
 
           if(/\/\*$/.test(dir)){
+            src   = src.replace(/\/\*$/, '')
             name  = name.replace(/\/\*$/, '')
             dir   = dir.replace(/\/\*$/, '')
             console.log("Wildcard", name, dir)
@@ -64,11 +65,12 @@ export default function (babel) {
               if (state.opts.nostrip !== true) name = "./" + _path.join(src, _path.basename(file));
               else name = "./" + _path.join(src, file);
 
+              console.log(name)
               let importDeclaration = t.importDeclaration(
                 [t.importDefaultSpecifier(
                   id
                 )],
-                t.stringLiteral(name.replace(/\/\*$/, ''))
+                t.stringLiteral(name)
               );
               let thing = t.expressionStatement(
                   t.assignmentExpression("=", t.memberExpression(
