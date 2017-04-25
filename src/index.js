@@ -65,7 +65,6 @@ export default function (babel) {
               if (state.opts.nostrip !== true) name = "./" + _path.join(src, _path.basename(file));
               else name = "./" + _path.join(src, file);
 
-              console.log(name)
               let importDeclaration = t.importDeclaration(
                 [t.importDefaultSpecifier(
                   id
