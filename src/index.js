@@ -68,7 +68,7 @@ export default function (babel) {
                 [t.importDefaultSpecifier(
                   id
                 )],
-                t.stringLiteral(name)
+                t.stringLiteral(name.replace(/\/\*$/, ''))
               );
               let thing = t.expressionStatement(
                   t.assignmentExpression("=", t.memberExpression(
