@@ -13,8 +13,6 @@ export default function (babel) {
         let addWildcard = false, wildcardName;
 
         if(/\/\*$/.test(src)){
-          console.log("Wildcard", src)
-
           src = src.replace(/\/\*$/, '')
 
           for (var i = 0; i < node.specifiers.length; i++) {
